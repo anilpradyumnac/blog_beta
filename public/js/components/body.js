@@ -27,21 +27,26 @@ var FormBody = React.createClass({
         var author = $("#author").val();
         var desc = $("#blog").val();
         var mark = parseInt($("#mark").val();
-        var data = 
-        {
-    "id" : 2,
-    "slug" : "creating-a-super-simple-todo-app-using-angular-2—tutorial",
-    "title" : "Creating a Super Simple Todo app Using Angular 2 — Tutorial",
-    "description" : "Angular 2 is already popular and so many JavaScript developers are eagerly waiting to try it out. You may have the idea that Angular 2 is going to introduce a lot of new & exciting features and remove several old concepts. So, in this tutorial I will show you how to create a super simple Todo app using Angular 2.0. In the process you will also learn how to use Components, Templates, Data Binding and a few other important stuff. So, let's start!",
-    "author" : {
-      "photo" : "/images/syed.jpg",
-      "name" : "Syed"
-    }
-  }
+				$.getJSON( "/public/static/post.json", function( data ) {
+				
+	        var data_pushed = 
+					{
+						"id":,
+						"slug":slug,
+						"title":title,
+						"description":desc,
+						"author":{
+							"name":author
+						}
+					}
+        
       
-        fullData.users.push(data);
-        console.log(fullData);
-        alert(JSON.stringify(fullData));
+	        data.users.push(data_pushed);
+	        console.log(data);
+	        alert(JSON.stringify(data));
+				  
+	});
+        
     });
 // });
 	},

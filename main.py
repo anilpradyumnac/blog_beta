@@ -83,10 +83,17 @@ def update_profile(request, response):
         redis_server.hmset(redis_key, user_details)
         return home(request, response)
 
+def edit(request, response):
+    with open("./views/edit.html","r") as fd:
+        server.send_html_handler(request,response,fd.read())
+
 
 def write(request, response):
-    with open("./public/static/post.json", "r") as fd:
+    with open("./views/write.html", "r") as fd:
         server.send_html_handler(request, response, fd.read())
+def getjson(request,response):
+    with open("./public/static/post.json","r") as fd:
+        server.send_html_handler(request, response, fd.read())        
 
 def index(request, response):
     with open("./views/index.html", "r") as fd:
@@ -134,8 +141,9 @@ def build_routes():
     server.add_route('get', '/index', index)    
     server.add_route('get', '/admin', admin)
     server.add_route('post', '/new_user', new_user)
-    server.add_route('get','/public/static/post.json',write)
-
+    server.add_route('get','/public/static/post.json',getjson)
+    server.add_route('get','/edit',edit)
+    
 if __name__ == "__main__":
     if check_redis_connection():
         port = int(raw_input("PORT>"))

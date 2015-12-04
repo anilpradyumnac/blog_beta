@@ -1,0 +1,55 @@
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>edit</title>
+		<<script type="text/javascript">
+			var fullData =
+			{
+			    "users":
+			    [
+			        {
+			            "user": "John",
+			            "age": 36,
+			            "grade": "C",
+			            "mark": 88
+			        }, 
+			        {
+			            "user": "Rose",
+			            "age": 28,
+			            "grade": "B",
+			            "mark": 90
+			        }
+			    ]
+			};
+
+			$(document).ready(function()
+			{
+			    $("#addtoJSON").click(function()
+			    {
+			        var user = $("#user").val();
+			        var age = parseInt($("#age").val());
+			        var grade = $("#grade").val();
+			        var mark = parseInt($("#mark").val());
+			        var data = 
+			        {
+			            name: user,
+			            age: age,
+			            grade: grade,
+			            mark: mark
+			        };
+			        fullData.users.push(data);
+			        console.log(fullData);
+			        console.log(JSON.stringify(fullData));
+			    });
+			});
+		</script>
+	</head>
+	<body id="edit" onload="">
+		<p>Name:<input type="text" id="user" name="user" /></p>
+		<p>Age:<input type="text" id="age" name="age" /></p>
+		<p>Grade:<input type="text" id="grade" name="grade" /></p>
+		<p>Mark:<input type="text" id="mark" name="mark" /></p>
+		<button id="addtoJSON">Add To JSON</button>
+	</body>
+	
+</html>
