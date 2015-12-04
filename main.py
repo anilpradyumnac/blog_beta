@@ -85,7 +85,7 @@ def update_profile(request, response):
 
 
 def write(request, response):
-    with open("./views/write.html", "r") as fd:
+    with open("./public/static/post.json", "r") as fd:
         server.send_html_handler(request, response, fd.read())
 
 def index(request, response):
@@ -134,7 +134,7 @@ def build_routes():
     server.add_route('get', '/index', index)    
     server.add_route('get', '/admin', admin)
     server.add_route('post', '/new_user', new_user)
-
+    server.add_route('get','/public/static/post.json',write)
 
 if __name__ == "__main__":
     if check_redis_connection():

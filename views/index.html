@@ -2,9 +2,24 @@
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Home Page</title>
-		<link rel="stylesheet" href="/css/master.css" type="text/css" media="screen">
+		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>        
+  <script type="text/javascript">
+ 		    $(document).ready(function(e) {
+					$.getJSON( "/public/static/post.json", function( data ) {
+						var output="<ul>";
+						for (var i in data.posts) {
+							output+="<li>" + data.posts[i].author+"</li>";
+						        }
+
+						        output+="</ul>";
+						        document.getElementById("placeholder").innerHTML=output;
+						  });
+						
+					  
+ 		});
+		</script>
 	</head>
 	<body id="Main container" onload="">
-		
+			<div id="placeholder"></div>
 	</body>
 </html>
