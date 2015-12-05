@@ -85,7 +85,7 @@ def update_profile(request, response):
 
 
 def write(request, response):
-    with open("./public/static/post.json", "r") as fd:
+    with open("./views/write.html", "r") as fd:
         server.send_html_handler(request, response, fd.read())
 
 def index(request, response):
