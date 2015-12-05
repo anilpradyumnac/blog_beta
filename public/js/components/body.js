@@ -17,7 +17,7 @@ var Header = React.createClass({
 
 
 var FormBody = React.createClass({
-	handleSubmit:function(){
+	/*handleSubmit:function(){
 		// $(document).ready(function()
 {
     $("#post").click(function()
@@ -49,7 +49,7 @@ var FormBody = React.createClass({
         
     });
 // });
-	},
+	},*/
 	
 	render:function(){
 		return(
