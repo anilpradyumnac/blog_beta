@@ -42,6 +42,14 @@ header li a:hover {
 
 .wrapper {
   width: 600px;
+  height:100%;
+  display: block;
+  margin: auto;
+  font-family: 'Lato'; 
+}
+
+.formwrapper{
+  width: 600px;
   height:400px;
   display: block;
   margin: auto;
