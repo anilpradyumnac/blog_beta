@@ -17,6 +17,7 @@ var Header = React.createClass({
 
 
 var FormBody = React.createClass({
+<<<<<<< HEAD
 	/*handleSubmit:function(){
 		// $(document).ready(function()
 {
@@ -51,6 +52,14 @@ var FormBody = React.createClass({
 // });
 	},*/
 	
+=======
+	handleSubmit:function(){
+      var title = ReactDOM.findDOMNode(this.refs.title).value
+      var author = ReactDOM.findDOMNode(this.refs.author).value
+      var blog = ReactDOM.findDOMNode(this.refs.blog).value
+      
+	},
+>>>>>>> origin/dev-sai
 	render:function(){
 		return(
 			<div>

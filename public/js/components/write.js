@@ -1,27 +1,31 @@
-var Header = React.createClass({
-	render:function(){
-		return(
-		<div>
-			<header>
-		    <ul>
-		        <li><a href="">Home</a></li>
-		        <li><a href id="digits-sdk" onclick="onLoginButtonClick()">Sign In</a></li>
-		    </ul>
-			    <h1>Geekskool Blog</h1>
-			    <h3>Write.  Share.  Learn</h3>
-			</header>
-		</div>
-		)
-	}
-})
-
-
 var FormBody = React.createClass({
+	getInitialState:function(){
+		return{
+			id:0
+		}
+	},
 	handleSubmit:function(){
       var title = ReactDOM.findDOMNode(this.refs.title).value
       var author = ReactDOM.findDOMNode(this.refs.author).value
       var blog = ReactDOM.findDOMNode(this.refs.blog).value
-      
+	  var slug = title.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-')
+	  this.setState({
+	  	id: this.state.id + 1
+	  }) 
+	  var id = this.state.id
+	  $.getJSON("static/post.json",function(data){
+		var obj = {
+			id :id,
+			slug:slug,
+			title:title,
+			description:blog,
+		}
+		data.push(obj)
+		console.log(data)
+	})     
+	},
+	componentDidMount:function(){
+		this.handleSubmit()
 	},
 	render:function(){
 		return(
@@ -29,7 +33,6 @@ var FormBody = React.createClass({
 			<form action="/new_blog" method="post" onSubmit={this.handleSubmit}>
 				<fieldset>
 		            <input type="text" id="title" ref="title" name="title" placeholder="Enter the title of the post"/>
-		            <input type="text" id="author" ref="author" placeholder="Author"/>
 	                <textarea id="blog" ref="blog" placeholder="Enter your post" name="blog"></textarea>
 	                <input type="submit" id="post" ref="submit" value="Post"/>
 	             </fieldset> 
@@ -64,7 +67,6 @@ var Main = React.createClass({
 	render:function(){
 		return(
 			<div>
-				<Header/>
 				<Body/>
 				<Footer/>
 			</div>
