@@ -5,6 +5,7 @@ import urlparse
 from threading import Thread
 from Queue import Queue
 import json
+import os
 
 
 ROUTES = {
@@ -47,28 +48,36 @@ def start_server(hostname, port=8080, nworkers=20):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((hostname, port))
         print "server started at port:", port
-        sock.listen(3)
-        worker_queue = Queue(nworkers)
-        for _ in xrange(nworkers):
-            proc = Thread(target=worker_thread, args=(worker_queue,))
-            proc.daemon = True
-            proc.start()
+        sock.listen(20)
+        #worker_queue = Queue(nworkers)
+        #for _ in xrange(nworkers):
+        #    proc = Thread(target=worker_thread, args=(worker_queue,))
+        #    proc.daemon = True
+        #    proc.start()
         while True:
             (client_socket, addr) = sock.accept()
-            worker_queue.put((client_socket, addr))
+            pid = os.fork()
+            #worker_queue.put((client_socket, addr))
+            if pid == 0:  # child
+                sock.close()  # close child copy
+                worker_thread(client_socket, addr)
+                client_socket.close()
+                os._exit(0)  # child exits here
+            else:  # parent
+                client_socket.close()
     except KeyboardInterrupt:
         print "Bye Bye"
     finally:
         sock.close()
 
 
-def worker_thread(worker_queue):
+def worker_thread(client_socket, addr):
     '''WORKER THREAD
 
     Accept requests and invoke request handler
     '''
     request = {}
-    client_socket, addr = worker_queue.get()
+    #client_socket, addr = worker_queue.get()
     request['socket'] = client_socket
     request['address'] = addr
     header_str, body_str = get_http_header(request, '')
@@ -84,8 +93,7 @@ def worker_thread(worker_queue):
         request['body'] = body_str
     if request:
         request_handler(request)
-    else:
-        client_socket.close()
+    #client_socket.close()
 
 
 #Parsers
@@ -256,18 +264,21 @@ def head_handler(request, response):
 
 def static_file_handler(request, response):
     '''HTTP Static File Handler'''
+    #print 'static_file_handler'
     try:
         with open('./public' + request['path'], 'r') as file_descriptor:
             response['content'] = file_descriptor.read()
+        file_descriptor.close()
         content_type = request['path'].split('.')[-1].lower()
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
-    except IOError:
+    except:
         err_404_handler(request, response)
 
 
 def err_404_handler(request, response):
     '''HTTP 404 Handler'''
+    #print 'err_404_handler'
     response['status'] = "HTTP/1.1 404 Not Found"
     response['content'] = "Content Not Found"
     response['Content-type'] = "text/HTML"
@@ -276,6 +287,7 @@ def err_404_handler(request, response):
 
 def ok_200_handler(request, response):
     '''HTTP 200 Handler'''
+    #print 'ok_200_handler'
     response['status'] = "HTTP/1.1 200 OK"
     if response['content'] and response['Content-type']:
         response['Content-Length'] = str(len(response['content']))
@@ -284,13 +296,15 @@ def ok_200_handler(request, response):
 
 def response_handler(request, response):
     '''HTTP response Handler'''
+    #print 'response_handler'
     response['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
     response['Connection'] = 'close'
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
     request['socket'].send(response_string)
-    if request['header']['Connection'] != 'keep-alive' or response['status'] == "HTTP/1.1 404 Not Found":
-        request['socket'].close()
+    #if request['header']['Connection'] != 'keep-alive':
+    #request['socket'].close()
+    #print 'close in respnse'
 
 
 
@@ -304,7 +318,7 @@ def add_session(request, content):
         sid = browser_cookies['sid']
         if sid in SESSIONS:
             SESSIONS[sid] = content
-    print SESSIONS
+    print '__SESSIONS : ', SESSIONS
 
 
 def get_session(request):
@@ -316,6 +330,7 @@ def get_session(request):
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
         if sid in SESSIONS:
+            print '__CUR_SESSION : ', SESSIONS[sid]
             return SESSIONS[sid]
         else:
             return ''
@@ -326,6 +341,7 @@ def send_html_handler(request, response, content):
 
     Add html content to response
     '''
+    #print 'send_html_handlre'
     if content:
         response['content'] = content
         response['Content-type'] = 'text/html'
@@ -339,6 +355,7 @@ def send_json_handler(request, response, content):
 
     Add JSON content to response
     '''
+    #print 'send_json_handlre'
     if content:
         response['content'] = json.dumps(content)
         response['Content-type'] = 'application/json'
