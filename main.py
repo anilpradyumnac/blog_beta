@@ -18,6 +18,7 @@ def html_header():
     header_html = ''
     with open('./views/header.html', 'r') as fd:
         header_html = fd.read()
+    fd.close()
     return header_html
 
 
@@ -25,6 +26,7 @@ def html_tail():
     footer_html = ''
     with open('./views/footer.html', 'r') as fd:
         footer_html = fd.read()
+    fd.close()
     return footer_html
 
 
@@ -51,7 +53,10 @@ def home(request, response):
 
 def login(request, response):
     with open("./views/login.html", "r") as fd:
-        server.send_html_handler(request, response, fd.read())
+        content = fd.read()
+    fd.close()
+    server.send_html_handler(request, response, content)
+    
 
 
 def verify(request, response):
@@ -68,13 +73,14 @@ def verify(request, response):
     print phone_num
     content = {'status': result, 'user': phone_num}
     server.add_session(request, content)
-    print server.SESSIONS
     server.send_json_handler(request, response, content)
 
 
 def profile(request, response):
     with open("./views/profile.html", "r") as fd:
-        server.send_html_handler(request, response, fd.read())
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)
 
 
 def update_profile(request, response):
@@ -89,20 +95,29 @@ def update_profile(request, response):
 
 def edit(request, response):
     with open("./views/edit.html","r") as fd:
-        server.send_html_handler(request,response,fd.read())
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request,response, content)
 
 
 def write(request, response):
     with open("./views/write.html", "r") as fd:
-        server.send_html_handler(request, response, fd.read())
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)
+
 def getjson(request,response):
     with open("./public/static/post.json","r") as fd:
-        server.send_html_handler(request, response, fd.read())        
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)        
 
 def index(request, response):
     print 'Index'
     with open("./views/index.html", "r") as fd:
-        server.send_html_handler(request, response, fd.read())        
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)    
 
 
 def new_blog(request, response):
@@ -127,16 +142,22 @@ def new_blog(request, response):
 def admin(request, response):
     print 'admin'
     with open("./views/admin.html", "r") as fd:
-        server.send_html_handler(request, response, fd.read())
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)
 
 
 def new_user(request, response):
     print 'new_user'
     content = request['content']
+    print 'content : ', content
     session_data = server.get_session(request)
+    print 'users ',redis_server.smembers('all_users')
     if session_data and 'user' in session_data:
+        print 'in if'
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
+    print 'going to home'
     return home(request, response)
 
 
