@@ -29,6 +29,7 @@ def html_tail():
 
 
 def home(request, response):
+    print 'Home'
     data = html_header()
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
@@ -54,6 +55,7 @@ def login(request, response):
 
 
 def verify(request, response):
+    print 'verify'
     url = request['content']['apiUrl'][0]
     header = {'Authorization': ''.join(request['content']['authHeader'])}
     data = requests.get(url, headers=header).text
@@ -63,8 +65,10 @@ def verify(request, response):
         result = 'success'
     else:
         result = 'failure'
+    print phone_num
     content = {'status': result, 'user': phone_num}
     server.add_session(request, content)
+    print server.SESSIONS
     server.send_json_handler(request, response, content)
 
 
@@ -96,15 +100,19 @@ def getjson(request,response):
         server.send_html_handler(request, response, fd.read())        
 
 def index(request, response):
+    print 'Index'
     with open("./views/index.html", "r") as fd:
         server.send_html_handler(request, response, fd.read())        
 
 
 def new_blog(request, response):
+    print 'new_blog'
     session_data = server.get_session(request)
+    print session_data
     if session_data and 'user' in session_data:
         title = request['content']['title'][0]
         blog = request['content']['blog'][0]
+        print title, '__', blog
         redis_server.incr('counter')
         counter = redis_server.get('counter')
         blog_id = 'blog' + counter
@@ -117,11 +125,13 @@ def new_blog(request, response):
 
 
 def admin(request, response):
+    print 'admin'
     with open("./views/admin.html", "r") as fd:
         server.send_html_handler(request, response, fd.read())
 
 
 def new_user(request, response):
+    print 'new_user'
     content = request['content']
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
@@ -141,6 +151,7 @@ def build_routes():
     server.add_route('get', '/index', index)    
     server.add_route('get', '/admin', admin)
     server.add_route('post', '/new_user', new_user)
+    #server.add_route('get', '/new_user', new_user)
     server.add_route('get','/public/static/post.json',getjson)
     server.add_route('get','/edit',edit)
     
