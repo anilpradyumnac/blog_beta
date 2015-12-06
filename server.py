@@ -72,8 +72,9 @@ def worker_thread(worker_queue):
     request['socket'] = client_socket
     request['address'] = addr
     header_str, body_str = get_http_header(request, '')
-    print header_str
-    print body_str
+    #print '__HEADER : ',header_str
+    if body_str:
+        print '__BODY : ',body_str
     if not header_str:
         return
     header_parser(request, header_str)
@@ -81,7 +82,6 @@ def worker_thread(worker_queue):
         content_length = int(request['header']['Content-Length'])
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
-        print request
     if request:
         request_handler(request)
     else:
@@ -129,6 +129,7 @@ def header_parser(request, header_str):
     header = {}
     header_list = header_str.split('\r\n')
     first = header_list.pop(0)
+    print first #print request header
     request['method'], request['path'], request['protocol'] = first.split()
     for each_line in header_list:
         key, value = each_line.split(': ', 1)
@@ -288,8 +289,9 @@ def response_handler(request, response):
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
     request['socket'].send(response_string)
-    if request['header']['Connection'] != 'keep-alive':
+    if request['header']['Connection'] != 'keep-alive' or response['status'] == "HTTP/1.1 404 Not Found":
         request['socket'].close()
+
 
 
 def add_session(request, content):
@@ -302,6 +304,7 @@ def add_session(request, content):
         sid = browser_cookies['sid']
         if sid in SESSIONS:
             SESSIONS[sid] = content
+    print SESSIONS
 
 
 def get_session(request):
@@ -314,6 +317,8 @@ def get_session(request):
         sid = browser_cookies['sid']
         if sid in SESSIONS:
             return SESSIONS[sid]
+        else:
+            return ''
 
 
 def send_html_handler(request, response, content):

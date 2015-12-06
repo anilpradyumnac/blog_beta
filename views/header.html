@@ -33,20 +33,18 @@
   		};
   		$.post('/verify',verifyData)
     	.done(function(res){
-    		console.log(res)
     		var obj = res;
     		 if (obj.status=='success'){
-      console.log(obj)
-                        window.location = '/';
+                    window.location = '/';
     		 	}
     		  else {
     		  	console.log('failure')
-			window.location = '/';
+	               window.location = '/';
     		  } 
     		});
 	}
 	function onLoginFailure(loginResponse){
-  		console.log(loginResponse);
+  		alert(loginResponse);
 	}
 	
 </script>
@@ -58,7 +56,7 @@
 <header>
     <ul>
         <li><a href="">Home</a></li>
-        <li><a href id="digits-sdk" onclick="onLoginButtonClick()">Sign In</a></li>
+        <li><button id="digits-sdk" onclick="onLoginButtonClick()">Sign In</button></li>
     </ul>
 
     <h1>Geekskool Blog</h1>
