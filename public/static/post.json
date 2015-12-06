@@ -1,4 +1,4 @@
-{"posts":[
+[
   {
     "id" : 1,
     "slug" : "10-reasons-you-should-use-react-in-your-next-app",
@@ -49,4 +49,4 @@
       "name" : "Sandeep"
     }
   }
-	]}
+	]
