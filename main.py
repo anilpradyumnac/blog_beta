@@ -4,7 +4,7 @@ import ast
 import redis
 import time
 
-redis_server = redis.Redis('localhost')
+redis_server = redis.Redis('localhost',db=1)
 
 def check_redis_connection():
     try:
@@ -70,6 +70,7 @@ def verify(request, response):
         result = 'success'
     else:
         result = 'failure'
+    print result
     print phone_num
     content = {'status': result, 'user': phone_num}
     server.add_session(request, content)
@@ -180,7 +181,7 @@ if __name__ == "__main__":
     if check_redis_connection():
         port = int(raw_input("PORT>"))
         build_routes()
-        server.start_server("127.0.0.1", port, 20)
+        server.start_server("127.0.0.1", port, 100)
     else:
         print 'Redis server has not started, please start your redis server'
         print 'Start the redis server by executing $python start_redis.py'
