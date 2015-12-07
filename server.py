@@ -300,8 +300,6 @@ def response_handler(request, response):
     request['socket'].close()
     #print 'close in respnse'
 
-
-
 def add_session(request, content):
     '''ADD SESSION
 
@@ -331,6 +329,17 @@ def get_session(request):
         else:
             return ''
 
+def del_session(request):
+    '''DEL SESSIONS
+    
+    Delete session from SESSIONS
+    '''
+    browser_cookies = request['header']['Cookie']
+    if 'sid' in browser_cookies:
+        sid = browser_cookies['sid']
+        if sid in SESSIONS:
+            del SESSIONS[sid]
+    print '__SESSIONS : ', SESSIONS  
 
 def send_html_handler(request, response, content):
     '''send_html handler
@@ -345,7 +354,6 @@ def send_html_handler(request, response, content):
     else:
         err_404_handler(request, response)
 
-
 def send_json_handler(request, response, content):
     '''send_json handler
 
@@ -358,7 +366,6 @@ def send_json_handler(request, response, content):
         ok_200_handler(request, response)
     else:
         err_404_handler(request, response)
-
 
 METHOD = {
     'GET': get_handler,
