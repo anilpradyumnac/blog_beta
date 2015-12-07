@@ -66,21 +66,22 @@ def home(request, response):
 
 def get_blogs(request, response):
     session_data = server.get_session(request)
-    json = '['
+    json = []
+    dic = {}
     if session_data and 'user' in session_data:
         user = str(session_data['user'])
         blogs = redis_server.smembers('user_blogs'+':'+user)
     else:
         blogs = redis_server.smembers('all_blogs')
     for blog in blogs:
-        json += '{'
-        json += 'title : "' + redis_server.hget(blog, 'title') + '",'
-        json += 'slug : "' + (redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else '') + '",'
-        json += 'time : "' + (redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else '') + '",'
-        json += 'content : "' + redis_server.hget(blog, 'content') + '"'
-        json += '},'
-    json += ']'
-    server.send_html_handler(request, response, json)
+        dic['id'] = redis_server.hget(blog,'id') if redis_server.hget(blog, 'id') else ''
+        dic['title'] = redis_server.hget(blog, 'title')
+        dic['author'] = redis_server.hget(blog,'author') if redis_server.hget(blog, 'author') else ''
+        dic['slug'] = redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
+        dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
+        dic['content'] = redis_server.hget(blog, 'content')
+        json.append(dic)
+    server.send_json_handler(request, response, json)
 
 
 def login(request, response):
@@ -89,7 +90,11 @@ def login(request, response):
     fd.close()
     server.send_html_handler(request, response, content)
     
-
+def welcome(request,response):
+    with open("./views/welcome.html","r") as fd:
+        content = fd.read()
+    fd.close()
+    server.send_html_handler(request,response,content)
 
 def verify(request, response):
     print 'verify'
@@ -218,6 +223,7 @@ def build_routes():
     server.add_route('get','/signout',signout)
     server.add_route('get', '/get_blogs', get_blogs)
     server.add_route('get', '/get_user_details', get_user_details)
+    server.add_route('get','/welcome',welcome)
 
 if __name__ == "__main__":
     if check_redis_connection():
