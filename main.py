@@ -42,7 +42,6 @@ def signout(request, response):
     home(request, response)
 
 def home(request, response):
-    print 'Home'
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
         data = html_logged_in_header()
@@ -80,7 +79,7 @@ def get_blogs(request, response):
         dic['slug'] = redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
         dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
         dic['content'] = redis_server.hget(blog, 'content')
-        json.append(dic)
+        json.append(dic.copy())
     server.send_json_handler(request, response, json)
 
 
@@ -97,7 +96,6 @@ def welcome(request,response):
     server.send_html_handler(request,response,content)
 
 def verify(request, response):
-    print 'verify'
     url = request['content']['apiUrl'][0]
     header = {'Authorization': ''.join(request['content']['authHeader'])}
     data = requests.get(url, headers=header).text
@@ -107,8 +105,6 @@ def verify(request, response):
         result = 'success'
     else:
         result = 'failure'
-    print result
-    print phone_num
     content = {'status': result, 'user': phone_num}
     server.add_session(request, content)
     server.send_json_handler(request, response, content)
@@ -138,7 +134,7 @@ def update_profile(request, response):
         redis_key = 'user_profile' + ':' + session_data['user']
         user_details = {'name': name, 'email': email}
         redis_server.hmset(redis_key, user_details)
-        return home(request, response)
+        home(request, response)
 
 def edit(request, response):
     with open("./views/edit.html","r") as fd:
@@ -168,9 +164,7 @@ def index(request, response):
 
 
 def new_blog(request, response):
-    print 'new_blog'
     session_data = server.get_session(request)
-    print session_data
     if session_data and 'user' in session_data:
         title = request['content']['title'][0]
         blog = request['content']['blog'][0]
@@ -184,7 +178,7 @@ def new_blog(request, response):
         redis_server.sadd('user_blogs' + ':' + session_data['user'], blog_id)
         redis_server.sadd('all_blogs', blog_id)
         redis_server.save()
-    return home(request, response)
+    home(request, response)
 
 
 def admin(request, response):
@@ -196,15 +190,13 @@ def admin(request, response):
 
 
 def new_user(request, response):
-    print 'new_user'
     content = request['content']
-    print 'content : ', content
     session_data = server.get_session(request)
     print 'users ',redis_server.smembers('all_users')
     if session_data and 'user' in session_data:
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
-    return home(request, response)
+    update_profile(request, response)
 
 
 def build_routes():
