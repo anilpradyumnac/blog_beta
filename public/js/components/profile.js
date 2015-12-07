@@ -1,5 +1,9 @@
 var Profile = React.createClass({
-	
+	componentDidMount:function(){
+		$.get('/update_profile',function(data){
+			alert("get request was performed")
+		})
+	},
 	render:function(){
 		return(
 			<form action="/update_profile" method="post">

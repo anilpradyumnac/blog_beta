@@ -18,10 +18,10 @@
 					$.getJSON( "/public/static/post.json", function( data ) {
 						var output="<ul>";
 						for (var i in data.posts) {
-							output+="<li>" + data.posts[i].author+"</li>";
+							output+="<li>" + data.posts[i].id+data.posts[i].slug+"</li>";
 						        }
 
-						        output+="</ul>";
+						 output+="</ul>";
 						        document.getElementById("placeholder").innerHTML=output;
 						  });
 						

@@ -41,6 +41,16 @@ header li a {
 header li a:hover {
   color: #e43f11; }
 
+.signin{
+  height: 300px;
+}
+
+.signin button{
+  display: block;
+  margin: auto;
+}
+
+
 .wrapper {
   width: 600px;
   height:100%;

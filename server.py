@@ -5,6 +5,7 @@ import urlparse
 from threading import Thread
 from Queue import Queue
 import json
+import os
 
 
 ROUTES = {
@@ -47,7 +48,7 @@ def start_server(hostname, port=8080, nworkers=20):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((hostname, port))
         print "server started at port:", port
-        sock.listen(3)
+        sock.listen(20)
         worker_queue = Queue(nworkers)
         for _ in xrange(nworkers):
             proc = Thread(target=worker_thread, args=(worker_queue,))
@@ -72,8 +73,9 @@ def worker_thread(worker_queue):
     request['socket'] = client_socket
     request['address'] = addr
     header_str, body_str = get_http_header(request, '')
-    print header_str
-    print body_str
+    #print '__HEADER : ',header_str
+    if body_str:
+        print '__BODY : ',body_str
     if not header_str:
         return
     header_parser(request, header_str)
@@ -81,11 +83,9 @@ def worker_thread(worker_queue):
         content_length = int(request['header']['Content-Length'])
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
-        print request
     if request:
         request_handler(request)
-    else:
-        client_socket.close()
+    client_socket.close()
 
 
 #Parsers
@@ -129,6 +129,7 @@ def header_parser(request, header_str):
     header = {}
     header_list = header_str.split('\r\n')
     first = header_list.pop(0)
+    print first #print request header
     request['method'], request['path'], request['protocol'] = first.split()
     for each_line in header_list:
         key, value = each_line.split(': ', 1)
@@ -178,8 +179,10 @@ def session_handler(request, response):
     '''
     browser_cookies = request['header']['Cookie']
     if 'sid' in browser_cookies and browser_cookies['sid'] in SESSIONS:
+        print 'browser_cookies : ', browser_cookies
         return
     cookie = str(uuid1())
+    print 'gen_cookie : ',cookie
     response['Set-Cookie'] = 'sid=' + cookie
     SESSIONS[cookie] = {}
 
@@ -255,18 +258,21 @@ def head_handler(request, response):
 
 def static_file_handler(request, response):
     '''HTTP Static File Handler'''
+    #print 'static_file_handler'
     try:
         with open('./public' + request['path'], 'r') as file_descriptor:
             response['content'] = file_descriptor.read()
+        file_descriptor.close()
         content_type = request['path'].split('.')[-1].lower()
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
-    except IOError:
+    except:
         err_404_handler(request, response)
 
 
 def err_404_handler(request, response):
     '''HTTP 404 Handler'''
+    #print 'err_404_handler'
     response['status'] = "HTTP/1.1 404 Not Found"
     response['content'] = "Content Not Found"
     response['Content-type'] = "text/HTML"
@@ -275,6 +281,7 @@ def err_404_handler(request, response):
 
 def ok_200_handler(request, response):
     '''HTTP 200 Handler'''
+    #print 'ok_200_handler'
     response['status'] = "HTTP/1.1 200 OK"
     if response['content'] and response['Content-type']:
         response['Content-Length'] = str(len(response['content']))
@@ -283,25 +290,29 @@ def ok_200_handler(request, response):
 
 def response_handler(request, response):
     '''HTTP response Handler'''
+    #print 'response_handler'
     response['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
     response['Connection'] = 'close'
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
     request['socket'].send(response_string)
-    if request['header']['Connection'] != 'keep-alive':
-        request['socket'].close()
-
+    #if request['header']['Connection'] != 'keep-alive':
+    request['socket'].close()
+    #print 'close in respnse'
 
 def add_session(request, content):
     '''ADD SESSION
 
     Add session id to SESSIONS
     '''
+    print content
     browser_cookies = request['header']['Cookie']
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
+        print 'sid:',sid,content
         if sid in SESSIONS:
             SESSIONS[sid] = content
+    print '__SESSIONS : ', SESSIONS
 
 
 def get_session(request):
@@ -313,14 +324,29 @@ def get_session(request):
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
         if sid in SESSIONS:
+            print '__CUR_SESSION : ', SESSIONS[sid]
             return SESSIONS[sid]
+        else:
+            return ''
 
+def del_session(request):
+    '''DEL SESSIONS
+    
+    Delete session from SESSIONS
+    '''
+    browser_cookies = request['header']['Cookie']
+    if 'sid' in browser_cookies:
+        sid = browser_cookies['sid']
+        if sid in SESSIONS:
+            del SESSIONS[sid]
+    print '__SESSIONS : ', SESSIONS  
 
 def send_html_handler(request, response, content):
     '''send_html handler
 
     Add html content to response
     '''
+    #print 'send_html_handlre'
     if content:
         response['content'] = content
         response['Content-type'] = 'text/html'
@@ -328,19 +354,18 @@ def send_html_handler(request, response, content):
     else:
         err_404_handler(request, response)
 
-
 def send_json_handler(request, response, content):
     '''send_json handler
 
     Add JSON content to response
     '''
+    #print 'send_json_handlre'
     if content:
         response['content'] = json.dumps(content)
         response['Content-type'] = 'application/json'
         ok_200_handler(request, response)
     else:
         err_404_handler(request, response)
-
 
 METHOD = {
     'GET': get_handler,
