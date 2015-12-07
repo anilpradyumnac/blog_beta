@@ -115,6 +115,15 @@ def profile(request, response):
     fd.close()        
     server.send_html_handler(request, response, content)
 
+def get_user_details(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        redis_key = 'user_profile' + ':' + session_data['user']
+        name = redis_server.hget(redis_key, 'name') if redis_server.hget(redis_key, 'name') else ''
+        email = redis_server.hget(redis_key, 'email') if redis_server.hget(redis_key, 'email') else ''
+        mobile = session_data['user']
+        user_details = {'name': name, 'email': email, 'mobile' : mobile}
+        server.send_json_handler(request, response, user_details)
 
 def update_profile(request, response):
     session_data = server.get_session(request)
@@ -198,7 +207,7 @@ def build_routes():
     server.add_route('get', '/login', login)
     server.add_route('post', '/verify', verify)
     server.add_route('get', '/profile', profile)
-    server.add_route('post', '/update_user', update_profile)
+    server.add_route('post', '/update_profile', update_profile)
     server.add_route('get', '/write', write)
     server.add_route('post', '/new_blog', new_blog)
     server.add_route('get', '/index', index)    
@@ -208,6 +217,7 @@ def build_routes():
     server.add_route('get','/edit',edit)
     server.add_route('get','/signout',signout)
     server.add_route('get', '/get_blogs', get_blogs)
+    server.add_route('get', '/get_user_details', get_user_details)
 
 if __name__ == "__main__":
     if check_redis_connection():
