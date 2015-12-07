@@ -48,7 +48,7 @@ var Footer = React.createClass({
 		return(
 		 <footer>
         Powered by Geekskool.
-    </footer>
+   		 </footer>
 		)
 	}
 })

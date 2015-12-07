@@ -41,6 +41,16 @@ header li a {
 header li a:hover {
   color: #e43f11; }
 
+.signin{
+  height: 300px;
+}
+
+.signin button{
+  display: block;
+  margin: auto;
+}
+
+
 .wrapper {
   width: 600px;
   height:100%;
@@ -76,37 +86,6 @@ footer {
   box-shadow: 0 10px 6px -6px #777;
 }
 
-.letter {
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  margin:20px auto;
-  max-width: 550px;
-  min-height: 700px;
-  padding: 24px;
-  position: relative;
-    width: 80%;
-}
-.letter:before, .letter:after {
-  content: "";
-  height: 98%;
-  position: absolute;
-  width: 100%;
-  z-index: -1;
-}
-.letter:before {
-  background: #fff;
-  box-shadow: 0 0 8px rgba(0,0,0,0.2);
-  left: -5px;
-  top: 4px;
-  transform: rotate(-4.5deg);
-}
-.letter:after {
-  background: #fff;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
-  right: -3px;
-  top: 1px;
-  transform: rotate(3.5deg);
-}
 
 fieldset{
   border: none;
@@ -195,3 +174,45 @@ button:hover{
   color: #768A9A;
 }
 
+
+@media screen and (min-width: 760px) and (max-width: 860px) {
+  header{
+    width: 100%;
+    box-sizing:border-box;
+    min-height: 200px; 
+  }
+  header h1 {
+  margin: auto;
+  padding: 0;
+  width: 50%;
+  text-align: center;
+  }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1280px ) {
+  header{
+    width: 100%;
+    box-sizing:border-box;
+    min-height: 300px;
+  }
+  header h1 {
+  margin: auto;
+  padding: 0;
+  width: 50%;
+  text-align: center; 
+  }
+}
+
+@media screen and (max-width: 768px ) {
+   header{
+    width: 100%;
+    box-sizing:border-box;
+    min-height: 300px; 
+  }
+  header h1 {
+  width: 50%;
+  margin: auto;
+  padding: 0;
+  text-align: center; 
+  }
+}
