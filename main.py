@@ -75,7 +75,11 @@ def get_blogs(request, response):
     for blog in blogs:
         json += '{'
         json += 'title : "' + redis_server.hget(blog, 'title') + '",'
+<<<<<<< HEAD
         json += 'author:"' + redis_server.hget(blog,'') + '",'
+=======
+        json += 'author: "' + redis_server.hget(blog, '') + '",'
+>>>>>>> origin/master
         json += 'slug : "' + (redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else '') + '",'
         json += 'time : "' + (redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else '') + '",'
         json += 'content : "' + redis_server.hget(blog, 'content') + '"'
