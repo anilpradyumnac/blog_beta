@@ -56,25 +56,7 @@ def start_server(hostname, port=8080, nworkers=20):
             proc.start()
         while True:
             (client_socket, addr) = sock.accept()
-            worker_queue.put((client_socket, addr))        
-        #worker_queue = Queue(nworkers)
-        #for _ in xrange(nworkers):
-        #    proc = Thread(target=worker_thread, args=(worker_queue,))
-        #    proc.daemon = True
-        #    proc.start()
-        #(client_socket, addr) = sock.accept()
-        #worker_thread(client_socket, addr)
-        #while True:
-        #    (client_socket, addr) = sock.accept()
-        #    pid = os.fork()
-        #    #worker_queue.put((client_socket, addr))
-        #    if pid == 0:  # child
-        #        sock.close()  # close child copy
-        #       worker_thread(client_socket, addr)
-        #        client_socket.close()
-        #        os._exit(0)  # child exits here
-        #    else:  # parent
-        #       client_socket.close()
+            worker_queue.put((client_socket, addr))
     except KeyboardInterrupt:
         print "Bye Bye"
     finally:

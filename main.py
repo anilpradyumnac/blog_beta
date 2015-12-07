@@ -13,7 +13,13 @@ def check_redis_connection():
     except redis.ConnectionError:
         return False
 
-# Temporary HTML Generator functions
+def html_logged_in_header():
+    header_html = ''
+    with open('./views/header_signin.html', 'r') as fd:
+        header_html = fd.read()
+    fd.close()
+    return header_html
+
 def html_header():
     header_html = ''
     with open('./views/header.html', 'r') as fd:
@@ -29,17 +35,23 @@ def html_tail():
     fd.close()
     return footer_html
 
+def signout(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        server.del_session(request)
+    home(request, response)
 
 def home(request, response):
     print 'Home'
-    data = html_header()
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
+        data = html_logged_in_header()
         data += 'Hi '
         user = str(session_data['user'])
         data += user
         blogs = redis_server.smembers('user_blogs' + ':' + user)
     else:
+        data = html_header()
         blogs = redis_server.smembers('all_blogs')
     for blog in blogs:
         data += '<p>'
