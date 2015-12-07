@@ -6,7 +6,7 @@ var FormBody = React.createClass({
 	},
 	handleSubmit:function(){
       var title = ReactDOM.findDOMNode(this.refs.title).value
-      var author = ReactDOM.findDOMNode(this.refs.author).value
+      //var author = ReactDOM.findDOMNode(this.refs.author).value
       var blog = ReactDOM.findDOMNode(this.refs.blog).value
 	  var slug = title.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-')
 	  this.setState({
@@ -31,13 +31,14 @@ var FormBody = React.createClass({
 		return(
 			<div>
 			<form action="/new_blog" method="post" onSubmit={this.handleSubmit}>
-				<fieldset>
+				<fieldset name="slug" ref="slug">
 		            <input type="text" id="title" ref="title" name="title" placeholder="Enter the title of the post"/>
 	                <textarea id="blog" ref="blog" placeholder="Enter your post" name="blog"></textarea>
-	                <input type="submit" id="post" ref="submit" value="Post"/>
-	             </fieldset> 
-             </form>   
-           </div>
+									<input type="file" name="pic" accept="image/*" />
+									<input type="submit" id="post" ref="submit" value="Post"/>
+	      </fieldset> 
+      </form>   
+     	</div>
 		)
 	}
 })
@@ -47,7 +48,7 @@ var Footer = React.createClass({
 		return(
 		 <footer>
         Powered by Geekskool.
-    </footer>
+   		 </footer>
 		)
 	}
 })

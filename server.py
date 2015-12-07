@@ -49,35 +49,27 @@ def start_server(hostname, port=8080, nworkers=20):
         sock.bind((hostname, port))
         print "server started at port:", port
         sock.listen(20)
-        #worker_queue = Queue(nworkers)
-        #for _ in xrange(nworkers):
-        #    proc = Thread(target=worker_thread, args=(worker_queue,))
-        #    proc.daemon = True
-        #    proc.start()
+        worker_queue = Queue(nworkers)
+        for _ in xrange(nworkers):
+            proc = Thread(target=worker_thread, args=(worker_queue,))
+            proc.daemon = True
+            proc.start()
         while True:
             (client_socket, addr) = sock.accept()
-            pid = os.fork()
-            #worker_queue.put((client_socket, addr))
-            if pid == 0:  # child
-                sock.close()  # close child copy
-                worker_thread(client_socket, addr)
-                client_socket.close()
-                os._exit(0)  # child exits here
-            else:  # parent
-                client_socket.close()
+            worker_queue.put((client_socket, addr))
     except KeyboardInterrupt:
         print "Bye Bye"
     finally:
         sock.close()
 
 
-def worker_thread(client_socket, addr):
+def worker_thread(worker_queue):
     '''WORKER THREAD
 
     Accept requests and invoke request handler
     '''
     request = {}
-    #client_socket, addr = worker_queue.get()
+    client_socket, addr = worker_queue.get()
     request['socket'] = client_socket
     request['address'] = addr
     header_str, body_str = get_http_header(request, '')
@@ -92,8 +84,9 @@ def worker_thread(client_socket, addr):
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
     if request:
+        print '__REQUEST__',request
         request_handler(request)
-    #client_socket.close()
+    client_socket.close()
 
 
 #Parsers
@@ -303,19 +296,19 @@ def response_handler(request, response):
     response_string = response_stringify(response)
     request['socket'].send(response_string)
     #if request['header']['Connection'] != 'keep-alive':
-    #request['socket'].close()
+    request['socket'].close()
     #print 'close in respnse'
-
-
 
 def add_session(request, content):
     '''ADD SESSION
 
     Add session id to SESSIONS
     '''
+    print content
     browser_cookies = request['header']['Cookie']
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
+        print 'sid:',sid,content
         if sid in SESSIONS:
             SESSIONS[sid] = content
     print '__SESSIONS : ', SESSIONS
@@ -335,6 +328,17 @@ def get_session(request):
         else:
             return ''
 
+def del_session(request):
+    '''DEL SESSIONS
+    
+    Delete session from SESSIONS
+    '''
+    browser_cookies = request['header']['Cookie']
+    if 'sid' in browser_cookies:
+        sid = browser_cookies['sid']
+        if sid in SESSIONS:
+            del SESSIONS[sid]
+    print '__SESSIONS : ', SESSIONS  
 
 def send_html_handler(request, response, content):
     '''send_html handler
@@ -349,7 +353,6 @@ def send_html_handler(request, response, content):
     else:
         err_404_handler(request, response)
 
-
 def send_json_handler(request, response, content):
     '''send_json handler
 
@@ -362,7 +365,6 @@ def send_json_handler(request, response, content):
         ok_200_handler(request, response)
     else:
         err_404_handler(request, response)
-
 
 METHOD = {
     'GET': get_handler,
