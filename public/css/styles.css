@@ -42,12 +42,31 @@ header li a:hover {
   color: #e43f11; }
 
 .signin{
-  height: 300px;
+  height: 325px;
 }
 
-.signin button{
+.signin a{
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: 'Source Sans Pro';
   display: block;
   margin: auto;
+}
+
+.signin a:hover{
+  color: #768A9A;  
+}
+
+.write a{
+  color: #fff;
+  text-align: center;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  width: 200px;
+  height: 60px;
+  padding: 16px;
+  box-sizing:border-box;
 }
 
 
