@@ -188,6 +188,7 @@ def build_routes():
     #server.add_route('get', '/new_user', new_user)
     server.add_route('get','/public/static/post.json',getjson)
     server.add_route('get','/edit',edit)
+    server.add_route('get','/signout',signout)
     
 if __name__ == "__main__":
     if check_redis_connection():
