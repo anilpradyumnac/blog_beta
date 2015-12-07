@@ -84,6 +84,7 @@ def worker_thread(worker_queue):
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
     if request:
+        print '__REQUEST__',request
         request_handler(request)
     client_socket.close()
 
@@ -179,10 +180,8 @@ def session_handler(request, response):
     '''
     browser_cookies = request['header']['Cookie']
     if 'sid' in browser_cookies and browser_cookies['sid'] in SESSIONS:
-        print 'browser_cookies : ', browser_cookies
         return
     cookie = str(uuid1())
-    print 'gen_cookie : ',cookie
     response['Set-Cookie'] = 'sid=' + cookie
     SESSIONS[cookie] = {}
 

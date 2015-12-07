@@ -56,11 +56,31 @@ def home(request, response):
     for blog in blogs:
         data += '<p>'
         data += redis_server.hget(blog, 'title')
+        data += redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
+        data += redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
         data += '<br>'
         data += redis_server.hget(blog, 'content')
         data += '</p>'
     data += html_tail()
     server.send_html_handler(request, response, data)
+
+def get_blogs(request, response):
+    session_data = server.get_session(request)
+    json = '['
+    if session_data and 'user' in session_data:
+        user = str(session_data['user'])
+        blogs = redis_server.smembers('user_blogs'+':'+user)
+    else:
+        blogs = redis_server.smembers('all_blogs')
+    for blog in blogs:
+        json += '{'
+        json += 'title : "' + redis_server.hget(blog, 'title') + '",'
+        json += 'slug : "' + (redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else '') + '",'
+        json += 'time : "' + (redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else '') + '",'
+        json += 'content : "' + redis_server.hget(blog, 'content') + '"'
+        json += '},'
+    json += ']'
+    server.send_html_handler(request, response, json)
 
 
 def login(request, response):
@@ -144,7 +164,8 @@ def new_blog(request, response):
         redis_server.incr('counter')
         counter = redis_server.get('counter')
         blog_id = 'blog' + counter
-        blog_details = {'title': title, 'content': blog, 'time': time.time()}
+        slug = '-'.join(title.lower().split())
+        blog_details = {'title': title, 'content': blog, 'time': time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())+' IST', 'slug': slug}
         redis_server.hmset(blog_id, blog_details)
         redis_server.sadd('user_blogs' + ':' + session_data['user'], blog_id)
         redis_server.sadd('all_blogs', blog_id)
@@ -167,10 +188,8 @@ def new_user(request, response):
     session_data = server.get_session(request)
     print 'users ',redis_server.smembers('all_users')
     if session_data and 'user' in session_data:
-        print 'in if'
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
-    print 'going to home'
     return home(request, response)
 
 
@@ -185,11 +204,11 @@ def build_routes():
     server.add_route('get', '/index', index)    
     server.add_route('get', '/admin', admin)
     server.add_route('post', '/new_user', new_user)
-    #server.add_route('get', '/new_user', new_user)
     server.add_route('get','/public/static/post.json',getjson)
     server.add_route('get','/edit',edit)
     server.add_route('get','/signout',signout)
-    
+    server.add_route('get', '/get_blogs', get_blogs)
+
 if __name__ == "__main__":
     if check_redis_connection():
         port = int(raw_input("PORT>"))
