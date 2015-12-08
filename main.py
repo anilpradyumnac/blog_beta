@@ -66,12 +66,15 @@ def home(request, response):
 def get_blogs(request, response):
     session_data = server.get_session(request)
     json = []
+    json_new = {}
     dic = {}
     if session_data and 'user' in session_data:
         user = str(session_data['user'])
         blogs = redis_server.smembers('user_blogs'+':'+user)
     else:
         blogs = redis_server.smembers('all_blogs')
+    blog_length = len(blogs)
+    count = 0
     for blog in blogs:
         dic['id'] = redis_server.hget(blog,'id') if redis_server.hget(blog, 'id') else ''
         dic['title'] = redis_server.hget(blog, 'title')
@@ -80,7 +83,9 @@ def get_blogs(request, response):
         dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
         dic['content'] = redis_server.hget(blog, 'content')
         json.append(dic.copy())
-    server.send_json_handler(request, response, json)
+        json_new['post'+str(count)] = dic.copy()
+        count += 1
+    server.send_json_handler(request, response, json_new)
 
 
 def login(request, response):
