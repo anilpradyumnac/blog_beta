@@ -19,19 +19,18 @@ var GetPosts = React.createClass({
             data:[{}]
         })
     },
-    render:function(){
-        console.log('this.state.data')
-        for(var i=0;i<this.state.data.length;i++){
-            console.log(this.state.data[i].title);
-        }
-        return(
-        <div >
-                <div id="Title" >
-            test
-            <p></p>
-                </div>
-        </div>
-    )
-}
+		render:function(){
+		        var content = ''
+		        for(var i=0;i<this.state.data.length;i++){
+		            content += this.state.data[i].title
+		        }
+		        return(
+		        <div >
+		                <div id="Title" >
+		                    <br>{content}</br>
+		                </div>
+		        </div>
+		    )
+		}
 })
 ReactDOM.render(<GetPosts />,document.getElementById('app'))

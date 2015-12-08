@@ -63,6 +63,8 @@ def home(request, response):
     data += html_tail()
     server.send_html_handler(request, response, data)
 
+
+
 def get_blogs(request, response):
     session_data = server.get_session(request)
     json = []
@@ -99,6 +101,13 @@ def welcome(request,response):
         content = fd.read()
     fd.close()
     server.send_html_handler(request,response,content)
+    
+def imageupload(request, response):
+    with open("./views/imageupload.html", "r") as fd:
+        content = fd.read()
+    fd.close()        
+    server.send_html_handler(request, response, content)
+    
 
 def verify(request, response):
     url = request['content']['apiUrl'][0]
@@ -185,6 +194,13 @@ def new_blog(request, response):
         redis_server.save()
     home(request, response)
 
+def new_image(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        redis_key = 'user_profile' + ':' + session_data['user']
+        image = redis_server.hget(redis_key, 'image') if redis_server.hget(redis_key, 'email') else ''
+        imagedetails = {'image' : image}
+        server.send_json_handler(request, response, imagedetails)
 
 def admin(request, response):
     print 'admin'
@@ -221,6 +237,7 @@ def build_routes():
     server.add_route('get', '/get_blogs', get_blogs)
     server.add_route('get', '/get_user_details', get_user_details)
     server.add_route('get','/welcome',welcome)
+    server.add_route('get','/imageupload',imageupload)
 
 if __name__ == "__main__":
     if check_redis_connection():
