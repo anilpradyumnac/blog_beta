@@ -26,6 +26,7 @@ var FileForm = React.createClass({
     }
 
     reader.readAsDataURL(file);
+		console.log(file)
   },
 
   // return the structure to display and bind the onChange, onSubmit handlers
