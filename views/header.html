@@ -11,16 +11,17 @@
     
     <script src="js/react.js"></script>
     <script src="js/react-dom.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script id="sdk-js" src="https://cdn.digits.com/1/sdk.js" async></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script id="sdk-js" src="https://cdn.digits.com/1/sdk.js" async></script>    
 
 
 <script>   
     document.getElementById('sdk-js').onload = function() {
         Digits.init({ consumerKey: 'MYFeeLrod8xbnfFeQLKhVWs7E' });
-    };
+    };  
+  
     function onLoginButtonClick(event){
         Digits.logIn()
         .done(onLogin) /*handle the response*/
@@ -49,7 +50,9 @@
     function onLoginFailure(loginResponse){
         console.log(loginResponse);
     }
+    
 </script>
+
 </head>
 <body>
     <header>
