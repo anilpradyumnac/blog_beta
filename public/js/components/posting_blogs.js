@@ -55,4 +55,3 @@ var GetPosts = React.createClass({
 }
 })
 ReactDOM.render(<GetPosts />,document.getElementById('wrapper'))
->>>>>>> origin/dev-sai

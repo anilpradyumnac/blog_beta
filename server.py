@@ -73,9 +73,6 @@ def worker_thread(worker_queue):
     request['socket'] = client_socket
     request['address'] = addr
     header_str, body_str = get_http_header(request, '')
-    #print '__HEADER : ',header_str
-    if body_str:
-        print '__BODY : ',body_str
     if not header_str:
         return
     header_parser(request, header_str)
@@ -84,7 +81,7 @@ def worker_thread(worker_queue):
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
     if request:
-        print '__REQUEST__',request
+        print '__REQUEST__',request,'\n\n'
         request_handler(request)
     client_socket.close()
 
