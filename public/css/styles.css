@@ -69,7 +69,6 @@ header li a:hover {
   box-sizing:border-box;
 }
 
-
 .wrapper {
   width: 600px;
   height:100%;
@@ -228,14 +227,14 @@ button:hover{
   }
 }
 
-@media screen and (max-width: 768px ) {
+@media screen and (max-width: 640px ) {
    header{
     width: 100%;
     box-sizing:border-box;
-    min-height: 300px; 
+    min-height: 450px; 
   }
   header h1 {
-  width: 50%;
+  width: 100%;
   margin: auto;
   padding: 0;
   text-align: center; 
@@ -245,7 +244,25 @@ button:hover{
   height:100%;
   display: block;
   margin: auto;
-  font-family: 'Lato'; 
+  box-sizing:border-box ;   
   }
-
+  .formwrapper{
+  width:100%;
+  height:100%;
+  box-sizing:border-box    
+  display: block;
+  margin: auto; 
+}
+form{
+    width: 100%;
+    box-sizing:border-box  
+}
+textarea#blog{
+    width: 100%;
+    box-sizing:border-box
+}
+  footer{
+    width: 100%;
+    box-sizing:border-box;
+  }
 }

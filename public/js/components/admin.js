@@ -6,6 +6,7 @@ var Profile = React.createClass({
 	},
 	loadJson:function(){
 	$.get('/get_reg_users',function(newdata){
+		console.log(newdata)
 			this.setState({ data:newdata })
 	 }.bind(this))
 	},
@@ -13,7 +14,6 @@ var Profile = React.createClass({
 		this.loadJson()
 	},
 	render:function(){
-console.log(this.state.data)
 		return(
 <div>Hi</div>
 		)
