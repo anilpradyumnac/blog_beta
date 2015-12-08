@@ -256,9 +256,9 @@ def build_routes():
     server.add_route('get','/signout',signout)
     server.add_route('get', '/get_blogs', get_blogs)
     server.add_route('get', '/get_user_details', get_user_details)
-    server.add_route('get','/welcome', welcome)
-    server.add_route('get','/imageupload', imageupload)
-    server.add_route('get', '/get_reg_users', get_reg_users)
+    server.add_route('get','/welcome',welcome)
+    server.add_route('get','/imageupload',imageupload)
+    server.add_route('post','/new_image',new_image)
 
 if __name__ == "__main__":
     if check_redis_connection():

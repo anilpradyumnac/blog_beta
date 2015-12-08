@@ -28,13 +28,31 @@ var FileForm = React.createClass({
     reader.readAsDataURL(file);
 		console.log(file)
   },
+	//onupload us the following function
+	uploadFile: function (e) {
 
+	    var fd = new FormData();    
+	    fd.append( 'file', this.refs.file.getDOMNode().files[0] );
+
+	    $.ajax({
+	        url: '/new_image',
+	        data: fd,
+	        processData: false,
+	        contentType: false,
+	        type: 'POST',
+	        success: function(data){
+	            alert(data);
+	        }
+	    });
+	    e.preventDefault()
+	},
   // return the structure to display and bind the onChange, onSubmit handlers
   render: function() {
     // since JSX is case sensitive, be sure to use 'encType'
     return (
       <form action="/new_image" method="post" onSubmit={this.handleSubmit} encType="multipart/form-data">
         <input type="file" onChange={this.handleFile} />
+				<input type="button" ref="button" value="Upload" onClick={this.uploadFile} />
       </form>
     );
   },
