@@ -90,10 +90,15 @@ def login(request, response):
     server.send_html_handler(request, response, content)
     
 def welcome(request,response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        data = html_logged_in_header()
+    else:
+        data = html_header()
     with open("./views/welcome.html","r") as fd:
         content = fd.read()
     fd.close()
-    server.send_html_handler(request,response,content)
+    server.send_html_handler(request,response, data + content)
 
 def verify(request, response):
     url = request['content']['apiUrl'][0]
