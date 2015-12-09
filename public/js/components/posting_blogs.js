@@ -7,7 +7,7 @@ var EachPost = React.createClass({
                 {
                     this.props.data.map(function(eachContent){
                         return (
-                            <div>
+                            <div className="wrapper">
                             <div className="article">
                                 <h1>{eachContent.title}</h1>
                                 <p>By:{eachContent.author}</p>
@@ -18,7 +18,7 @@ var EachPost = React.createClass({
 
                            </div>
                             )
-                })
+                      })
                 }
             </div>
         )
