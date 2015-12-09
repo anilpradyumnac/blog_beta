@@ -251,6 +251,11 @@ def head_handler(request, response):
     response['content'] = ''
     response_handler(request, response)
 
+def slug_handler(request, response):
+    try:
+        ROUTES['get']['/slug'](request, response)
+    except:
+        err_404_handler(request, response)
 
 def static_file_handler(request, response):
     '''HTTP Static File Handler'''
@@ -263,7 +268,7 @@ def static_file_handler(request, response):
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
     except:
-        err_404_handler(request, response)
+        slug_handler(request, response)
 
 
 def err_404_handler(request, response):

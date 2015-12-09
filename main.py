@@ -79,7 +79,7 @@ def get_blogs(request, response):
     for blog in blogs:
         dic['id'] = redis_server.hget(blog,'id') if redis_server.hget(blog, 'id') else ''
         dic['title'] = redis_server.hget(blog, 'title')
-        dic['author'] = redis_server.hget(blog,'author') if redis_server.hget(blog, 'author') else ''
+        dic['author'] = get_user_name(blog)
         dic['slug'] = redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
         dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
         dic['content'] = redis_server.hget(blog, 'content')
@@ -109,7 +109,7 @@ def imageupload(request, response):
     with open("./views/imageupload.html", "r") as fd:
         content = fd.read()
     fd.close()        
-    server.send_html_handler(request,response,content)
+    server.send_html_handler(request,response, content)
 
 
 def verify(request, response):
@@ -133,6 +133,13 @@ def profile(request, response):
     fd.close()        
     server.send_html_handler(request, response, content)
 
+def get_user_name(blog):
+    all_users = redis_server.smembers('all_users')
+    for user in all_users:
+        if blog in redis_server.smembers('user_blogs'+':'+user):
+            redis_key = 'user_profile' + ':' + user
+            return redis_server.hget(redis_key, 'name') if redis_server.hget(redis_key, 'name') else ''
+
 def get_reg_users(request, response):
     json = []
     dic = {}
@@ -143,7 +150,6 @@ def get_reg_users(request, response):
         dic['name'] = redis_server.hget(redis_key, 'name') if redis_server.hget(redis_key, 'name') else ''
         json.append(dic.copy())
     server.send_json_handler(request, response, json)
-
 
 def get_user_details(request, response):
     session_data = server.get_session(request)
@@ -171,6 +177,37 @@ def edit(request, response):
     fd.close()        
     server.send_html_handler(request,response, content)
 
+def slug(request, response):
+    print 'in slug'
+    title = ''
+    author = ''
+    time = ''
+    blog_content = ''
+    valid_slug = False   
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        header = html_logged_in_header()
+    else:
+        header = html_header()    
+    with open("./views/slug.html", "r") as fd:
+        content = fd.read()
+    fd.close()
+    footer = html_tail()
+    slug = request['path'].split('/')[1]
+    blogs = redis_server.smembers('all_blogs')
+    for blog in blogs:
+        if redis_server.hget(blog, 'slug') == slug:
+            valid_slug = True
+            title = redis_server.hget(blog, 'title')
+            author = get_user_name(blog)
+            time = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
+            blog_content = redis_server.hget(blog, 'content')
+            print blog_content
+    blog_template = content.replace('%{{title}}%',title).replace('%{{author}}%', author).replace('%{{blog}}%', blog_content)
+    if valid_slug:
+        server.send_html_handler(request, response, header + blog_template + footer)
+    else:
+        server.send_html_handler(request, response, '')
 
 def write(request, response):
     session_data = server.get_session(request)
@@ -229,7 +266,6 @@ def admin(request, response):
     fd.close()        
     server.send_html_handler(request, response, content)
 
-
 def new_user(request, response):
     content = request['content']
     session_data = server.get_session(request)
@@ -241,7 +277,7 @@ def new_user(request, response):
 
 
 def build_routes():
-    server.add_route('get', '/', home)
+    server.add_route('get', '/', welcome)
     server.add_route('get', '/login', login)
     server.add_route('post', '/verify', verify)
     server.add_route('get', '/profile', profile)
@@ -256,9 +292,11 @@ def build_routes():
     server.add_route('get','/signout',signout)
     server.add_route('get', '/get_blogs', get_blogs)
     server.add_route('get', '/get_user_details', get_user_details)
-    server.add_route('get','/welcome',welcome)
-    server.add_route('get','/imageupload',imageupload)
-    server.add_route('post','/new_image',new_image)
+    server.add_route('get','/welcome', welcome)
+    server.add_route('get','/imageupload', imageupload)
+    server.add_route('get', '/get_reg_users', get_reg_users)
+    server.add_route('post','/new_image', new_image)
+    server.add_route('get', '/slug', slug)
 
 if __name__ == "__main__":
     if check_redis_connection():
