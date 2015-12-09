@@ -32,13 +32,13 @@ var FileForm = React.createClass({
 	uploadFile: function (e) {
 
 	    var fd = new FormData();    
-	    fd.append( 'file', this.refs.file.getDOMNode().files[0] );
+	    fd.append('file', $('#file')[0].files[0]);;
 
 	    $.ajax({
 	        url: '/new_image',
 	        data: fd,
 	        processData: false,
-	        contentType: false,
+	        contentType: 'multipart/form-data',
 	        type: 'POST',
 	        success: function(data){
 	            alert(data);
@@ -51,7 +51,7 @@ var FileForm = React.createClass({
     // since JSX is case sensitive, be sure to use 'encType'
     return (
       <form action="/new_image" method="post" onSubmit={this.handleSubmit} encType="multipart/form-data">
-        <input type="file" onChange={this.handleFile} />
+        <input type="file" id="file" name="file" onChange={this.handleFile} />
 				<input type="button" ref="button" value="Upload" onClick={this.uploadFile} />
       </form>
     );
