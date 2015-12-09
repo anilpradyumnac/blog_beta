@@ -109,7 +109,7 @@ def imageupload(request, response):
     with open("./views/imageupload.html", "r") as fd:
         content = fd.read()
     fd.close()        
-    server.send_html_handler(request,response, data + content)
+    server.send_html_handler(request,response,content)
 
 
 def verify(request, response):

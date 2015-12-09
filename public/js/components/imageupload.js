@@ -40,8 +40,8 @@ var FileForm = React.createClass({
 	        processData: false,
 	        contentType: 'multipart/form-data',
 	        type: 'POST',
-	        success: function(data){
-	            alert(data);
+	        success: function(fd){
+	            alert(fd);
 	        }
 	    });
 	    e.preventDefault()
