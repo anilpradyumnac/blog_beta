@@ -14,10 +14,7 @@ var Profile = React.createClass({
 		this.loadJson()
 	},
 	render:function(){
-<<<<<<< HEAD
-=======
 		console.log(this.state.data)
->>>>>>> origin/master
 		return(
 <div>Hi</div>
 		)
