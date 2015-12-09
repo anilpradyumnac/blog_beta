@@ -187,7 +187,7 @@ def form_parser(request):
     '''MULTIPART Parser'''
     form = {}
     content_type = request['header']['Content-Type']
-    boundary = content_type.split('; ')[1]
+    boundary = request['body'].split('; ')[1]
     request['boundary'] = '--' + boundary.split('=')[1]
     for content in request['body'].split(request['boundary']):
         form_header_dict = {}
