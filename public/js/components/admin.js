@@ -14,8 +14,9 @@ var Profile = React.createClass({
 		this.loadJson()
 	},
 	render:function(){
+		console.log(this.state.data)
 		return(
-<div>Hi</div>
+			<div>Hi</div>
 		)
 	}
 })

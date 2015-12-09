@@ -63,6 +63,8 @@ def home(request, response):
     data += html_tail()
     server.send_html_handler(request, response, data)
 
+
+
 def get_blogs(request, response):
     session_data = server.get_session(request)
     json = []
@@ -72,6 +74,8 @@ def get_blogs(request, response):
         blogs = redis_server.smembers('user_blogs'+':'+user)
     else:
         blogs = redis_server.smembers('all_blogs')
+    blog_length = len(blogs)
+    count = 0
     for blog in blogs:
         dic['id'] = redis_server.hget(blog,'id') if redis_server.hget(blog, 'id') else ''
         dic['title'] = redis_server.hget(blog, 'title')
@@ -92,13 +96,21 @@ def login(request, response):
 def welcome(request,response):
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
-        data = html_logged_in_header()
+        header = html_logged_in_header()
     else:
-        data = html_header()
+        header = html_header()
+    footer = html_tail()
     with open("./views/welcome.html","r") as fd:
         content = fd.read()
     fd.close()
+    server.send_html_handler(request, response, header + content + footer)
+    
+def imageupload(request, response):
+    with open("./views/imageupload.html", "r") as fd:
+        content = fd.read()
+    fd.close()        
     server.send_html_handler(request,response, data + content)
+
 
 def verify(request, response):
     url = request['content']['apiUrl'][0]
@@ -120,6 +132,18 @@ def profile(request, response):
         content = fd.read()
     fd.close()        
     server.send_html_handler(request, response, content)
+
+def get_reg_users(request, response):
+    json = []
+    dic = {}
+    all_users = redis_server.smembers('all_users')
+    for user in all_users:
+        redis_key = 'user_profile' + ':' + user
+        dic['user'] = user
+        dic['name'] = redis_server.hget(redis_key, 'name') if redis_server.hget(redis_key, 'name') else ''
+        json.append(dic.copy())
+    server.send_json_handler(request, response, json)
+
 
 def get_user_details(request, response):
     session_data = server.get_session(request)
@@ -149,10 +173,15 @@ def edit(request, response):
 
 
 def write(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        header = html_logged_in_header()
+    else:
+        header = html_header()    
     with open("./views/write.html", "r") as fd:
         content = fd.read()
     fd.close()        
-    server.send_html_handler(request, response, content)
+    server.send_html_handler(request, response, header + content)
 
 def getjson(request,response):
     with open("./public/static/post.json","r") as fd:
@@ -185,6 +214,13 @@ def new_blog(request, response):
         redis_server.save()
     home(request, response)
 
+def new_image(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        redis_key = 'user_profile' + ':' + session_data['user']
+        image = redis_server.hget(redis_key, 'image') if redis_server.hget(redis_key, 'email') else ''
+        imagedetails = {'image' : image}
+        server.send_json_handler(request, response, imagedetails)
 
 def admin(request, response):
     print 'admin'
@@ -221,6 +257,9 @@ def build_routes():
     server.add_route('get', '/get_blogs', get_blogs)
     server.add_route('get', '/get_user_details', get_user_details)
     server.add_route('get','/welcome',welcome)
+    server.add_route('get', '/get_reg_users', get_reg_users)    
+    server.add_route('get','/imageupload',imageupload)
+    server.add_route('post','/new_image',new_image)
 
 if __name__ == "__main__":
     if check_redis_connection():
