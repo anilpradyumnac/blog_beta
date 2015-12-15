@@ -38,6 +38,7 @@ var FormBody = React.createClass({
 									<input type="submit" id="post" ref="submit" value="Post"/>
 	      </fieldset> 
       </form>   
+			
      	</div>
 		)
 	}
@@ -46,9 +47,10 @@ var FormBody = React.createClass({
 var Footer = React.createClass({
 	render:function(){
 		return(
-		 <footer>
-        Powered by Geekskool.
-   		 </footer>
+		<footer>
+        		Powered by <a href="http://www.geekskool.com" target="_blank">Geekskool</a><br/>
+        		Runs on <a href="https://github.com/geekskool/magicserver" target="_blank">Magicserver</a>
+    	</footer>
 		)
 	}
 })
