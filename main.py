@@ -4,7 +4,7 @@ import ast
 import redis
 import time
 
-redis_server = redis.Redis('localhost',db=1)
+redis_server = redis.Redis('localhost',db = 1)
 
 def check_redis_connection():
     try:
@@ -79,11 +79,12 @@ def get_blogs(request, response):
     for blog in blogs:
         dic['id'] = redis_server.hget(blog,'id') if redis_server.hget(blog, 'id') else ''
         dic['title'] = redis_server.hget(blog, 'title')
-        dic['author'] = get_user_name(blog)
+        dic['author'] = get_user_name(blog) if get_user_name(blog) else ''
         dic['slug'] = redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
         dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
         dic['content'] = redis_server.hget(blog, 'content')
         json.append(dic.copy())
+    print json
     server.send_json_handler(request, response, json)
 
 
@@ -273,7 +274,8 @@ def new_user(request, response):
     if session_data and 'user' in session_data:
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
-    update_profile(request, response)
+        return home(request,response)
+    #update_profile(,request, response)
 
 
 def build_routes():

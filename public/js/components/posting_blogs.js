@@ -9,12 +9,11 @@ var EachPost = React.createClass({
                         return (
                             <div className="wrapper">
                             <div className="article">
-                                <h1>{eachContent.title}</h1>
-                                <p>By:{eachContent.author}</p>
-                                <p>{eachContent.content}</p>
-                                <h3>{eachContent.time}</h3>
+                                <h1><a href={eachContent.slug} target="_blank">{eachContent.title}</a></h1>
+                                <h3> By : {eachContent.author}   on {eachContent.time}</h3>
+                                <p><h4>{eachContent.content}</h4></p>
                            </div>
-                                    <p><a href={eachContent.slug}>Read more</a></p>
+                                    <p className="line"><a href={eachContent.slug}>Read more</a></p>
 
                            </div>
                             )
@@ -36,6 +35,7 @@ var GetPosts = React.createClass({
       url: '/get_blogs',
       dataType: 'json',
       success: function(data) {
+        console.log(data)
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {

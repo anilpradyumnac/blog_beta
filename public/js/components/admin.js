@@ -4,7 +4,7 @@ var Profile = React.createClass({
 			data:[]
 		}
 	},
-	loadJson:function(){
+	loadJson:function(){																																																								
 	$.get('/get_reg_users',function(newdata){
 		console.log(newdata)
 			this.setState({ data:newdata })
@@ -12,12 +12,18 @@ var Profile = React.createClass({
 	},
 	componentDidMount:function(){
 		this.loadJson()
-	},
+	},																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												
 	render:function(){
+<<<<<<< HEAD
 		console.log(this.state.data)
+=======
+>>>>>>> origin/dev-sai
 		return(
-<div>Hi</div>
-		)
+			<form action="/new_user" method="post">
+				<input type="text" placeholder="Add a user"/>
+				<input type="submit" value="Add"/>
+			</form>																																																																																																																																													
+		)	
 	}
 })
 
