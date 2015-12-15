@@ -23,8 +23,7 @@ CONTENT_TYPE = {
     'gif': 'image/gif',
     'ico': 'image/x-icon',
     'text': 'text/plain',
-    'json': 'application/json',
-    'otf': 'font/opentype'
+    'json': 'application/json'
 }
 
 SESSIONS = {}
@@ -64,7 +63,7 @@ def start_server(hostname, port=8080, nworkers=20):
             (client_socket, addr) = sock.accept()
             worker_queue.put((client_socket, addr))
             spwan_thread(worker_thread, (worker_queue,), True)
-            print 'Count :', threading.active_count()   
+            #print 'Count :', threading.active_count()   
     except KeyboardInterrupt:
         print "Bye Bye"
     finally:
@@ -258,6 +257,11 @@ def head_handler(request, response):
     response['content'] = ''
     response_handler(request, response)
 
+def slug_handler(request, response):
+    try:
+        ROUTES['get']['/slug'](request, response)
+    except:
+        err_404_handler(request, response)
 
 def static_file_handler(request, response):
     '''HTTP Static File Handler'''
@@ -265,11 +269,10 @@ def static_file_handler(request, response):
         with open('./public' + request['path'], 'r') as file_descriptor:
             response['content'] = file_descriptor.read()
         content_type = request['path'].split('.')[-1].lower()
-        print content_type
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
     except IOError:
-        err_404_handler(request, response)
+        slug_handler(request, response)
 
 
 def err_404_handler(request, response):
@@ -294,7 +297,6 @@ def response_handler(request, response):
     response['Connection'] = 'close'
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
-    print 'response send'
     request['socket'].send(response_string)
     if request['header']['Connection'] != 'keep-alive':
         request['socket'].close()
@@ -353,8 +355,7 @@ def send_json_handler(request, response, content):
     Add JSON content to response
     '''
     if content:
-        #response['content'] = json.dumps(content)
-        response['content'] = json.dumps(content).encode('utf8')
+        response['content'] = json.dumps(content)
         response['Content-type'] = 'application/json'
         ok_200_handler(request, response)
     else:
