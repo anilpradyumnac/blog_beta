@@ -38,7 +38,7 @@ var FileForm = React.createClass({
 	        url: '/new_image',
 	        data: fd,
 	        processData: false,
-	        contentType: 'multipart/form-data',
+	        contentType: false,
 	        type: 'POST',
 	        success: function(fd){
 	            alert(fd);
