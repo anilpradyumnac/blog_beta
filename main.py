@@ -252,12 +252,12 @@ def new_blog(request, response):
     home(request, response)
 
 def new_image(request, response):
-    session_data = server.get_session(request)
-    if session_data and 'user' in session_data:
-        redis_key = 'user_profile' + ':' + session_data['user']
-        image = redis_server.hget(redis_key, 'image') if redis_server.hget(redis_key, 'email') else ''
-        imagedetails = {'image' : image}
-        server.send_json_handler(request, response, imagedetails)
+    print request['form']['file']['filename']
+    file_dis =  open('./public/'+request['form']['file']['filename'], 'w')
+    file_dis.write(request['form']['file']['body'])
+    file_dis.close()
+    server.send_html_handler(request, response, 'Image Uploaded')
+
 
 def admin(request, response):
     print 'admin'
@@ -302,7 +302,7 @@ if __name__ == "__main__":
     if check_redis_connection():
         port = int(raw_input("PORT>"))
         build_routes()
-        server.start_server("127.0.0.1", port, 100)
+        server.start_server("127.0.0.1", port, 10)
     else:
         print 'Redis server has not started, please start your redis server'
         print 'Start the redis server by executing $python start_redis.py'
