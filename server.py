@@ -3,9 +3,9 @@ import time
 from uuid import uuid1
 import urlparse
 from threading import Thread
+import threading
 from Queue import Queue
 import json
-import os
 
 
 ROUTES = {
@@ -37,7 +37,14 @@ def add_route(method, path, func):
 
 
 #Server Functions
+def spwan_thread(func, arg, daemon):
+    '''Spwan thread
 
+    Spwan daemon threads
+    '''
+    proc = Thread(target=func, args=arg)
+    proc.daemon = daemon
+    proc.start()
 
 def start_server(hostname, port=8080, nworkers=20):
     '''Start Function
@@ -48,15 +55,15 @@ def start_server(hostname, port=8080, nworkers=20):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((hostname, port))
         print "server started at port:", port
-        sock.listen(20)
+        sock.listen(3)
         worker_queue = Queue(nworkers)
         for _ in xrange(nworkers):
-            proc = Thread(target=worker_thread, args=(worker_queue,))
-            proc.daemon = True
-            proc.start()
+            spwan_thread(worker_thread, (worker_queue,), True)
         while True:
             (client_socket, addr) = sock.accept()
             worker_queue.put((client_socket, addr))
+            spwan_thread(worker_thread, (worker_queue,), True)
+            print 'Count :', threading.active_count()   
     except KeyboardInterrupt:
         print "Bye Bye"
     finally:
@@ -81,9 +88,9 @@ def worker_thread(worker_queue):
         body_str = get_http_body(request, body_str, content_length)
         request['body'] = body_str
     if request:
-        print '__REQUEST__',request,'\n\n'
         request_handler(request)
-    client_socket.close()
+    else:
+        client_socket.close()
 
 
 #Parsers
@@ -127,7 +134,6 @@ def header_parser(request, header_str):
     header = {}
     header_list = header_str.split('\r\n')
     first = header_list.pop(0)
-    print first #print request header
     request['method'], request['path'], request['protocol'] = first.split()
     for each_line in header_list:
         key, value = each_line.split(': ', 1)
@@ -187,7 +193,7 @@ def form_parser(request):
     '''MULTIPART Parser'''
     form = {}
     content_type = request['header']['Content-Type']
-    boundary = request['body'].split('; ')[1]
+    boundary = content_type.split('; ')[1]
     request['boundary'] = '--' + boundary.split('=')[1]
     for content in request['body'].split(request['boundary']):
         form_header_dict = {}
@@ -251,29 +257,21 @@ def head_handler(request, response):
     response['content'] = ''
     response_handler(request, response)
 
-def slug_handler(request, response):
-    try:
-        ROUTES['get']['/slug'](request, response)
-    except:
-        err_404_handler(request, response)
 
 def static_file_handler(request, response):
     '''HTTP Static File Handler'''
-    #print 'static_file_handler'
     try:
         with open('./public' + request['path'], 'r') as file_descriptor:
             response['content'] = file_descriptor.read()
-        file_descriptor.close()
         content_type = request['path'].split('.')[-1].lower()
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
-    except:
-        slug_handler(request, response)
+    except IOError:
+        err_404_handler(request, response)
 
 
 def err_404_handler(request, response):
     '''HTTP 404 Handler'''
-    #print 'err_404_handler'
     response['status'] = "HTTP/1.1 404 Not Found"
     response['content'] = "Content Not Found"
     response['Content-type'] = "text/HTML"
@@ -282,7 +280,6 @@ def err_404_handler(request, response):
 
 def ok_200_handler(request, response):
     '''HTTP 200 Handler'''
-    #print 'ok_200_handler'
     response['status'] = "HTTP/1.1 200 OK"
     if response['content'] and response['Content-type']:
         response['Content-Length'] = str(len(response['content']))
@@ -291,29 +288,25 @@ def ok_200_handler(request, response):
 
 def response_handler(request, response):
     '''HTTP response Handler'''
-    #print 'response_handler'
     response['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
     response['Connection'] = 'close'
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
     request['socket'].send(response_string)
-    #if request['header']['Connection'] != 'keep-alive':
-    request['socket'].close()
-    #print 'close in respnse'
+    if request['header']['Connection'] != 'keep-alive':
+        request['socket'].close()
+
 
 def add_session(request, content):
     '''ADD SESSION
 
     Add session id to SESSIONS
     '''
-    print content
     browser_cookies = request['header']['Cookie']
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
-        print 'sid:',sid,content
         if sid in SESSIONS:
             SESSIONS[sid] = content
-    print '__SESSIONS : ', SESSIONS
 
 
 def get_session(request):
@@ -325,10 +318,7 @@ def get_session(request):
     if 'sid' in browser_cookies:
         sid = browser_cookies['sid']
         if sid in SESSIONS:
-            print '__CUR_SESSION : ', SESSIONS[sid]
             return SESSIONS[sid]
-        else:
-            return ''
 
 def del_session(request):
     '''DEL SESSIONS
@@ -340,14 +330,12 @@ def del_session(request):
         sid = browser_cookies['sid']
         if sid in SESSIONS:
             del SESSIONS[sid]
-    print '__SESSIONS : ', SESSIONS  
 
 def send_html_handler(request, response, content):
     '''send_html handler
 
     Add html content to response
     '''
-    #print 'send_html_handlre'
     if content:
         response['content'] = content
         response['Content-type'] = 'text/html'
@@ -355,18 +343,19 @@ def send_html_handler(request, response, content):
     else:
         err_404_handler(request, response)
 
+
 def send_json_handler(request, response, content):
     '''send_json handler
 
     Add JSON content to response
     '''
-    #print 'send_json_handlre'
     if content:
         response['content'] = json.dumps(content)
         response['Content-type'] = 'application/json'
         ok_200_handler(request, response)
     else:
         err_404_handler(request, response)
+
 
 METHOD = {
     'GET': get_handler,
