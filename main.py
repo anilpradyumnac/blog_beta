@@ -84,7 +84,6 @@ def get_blogs(request, response):
         dic['time'] = redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
         dic['content'] = redis_server.hget(blog, 'content')
         json.append(dic.copy())
-    print json
     server.send_json_handler(request, response, json)
 
 
@@ -170,7 +169,7 @@ def update_profile(request, response):
         redis_key = 'user_profile' + ':' + session_data['user']
         user_details = {'name': name, 'email': email}
         redis_server.hmset(redis_key, user_details)
-        home(request, response)
+        welcome(request, response)
 
 def edit(request, response):
     with open("./views/edit.html","r") as fd:
@@ -250,7 +249,7 @@ def new_blog(request, response):
         redis_server.sadd('user_blogs' + ':' + session_data['user'], blog_id)
         redis_server.sadd('all_blogs', blog_id)
         redis_server.save()
-    home(request, response)
+    welcome(request, response)
 
 def new_image(request, response):
     print request['form']['file']['filename']
@@ -274,7 +273,7 @@ def new_user(request, response):
     if session_data and 'user' in session_data:
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
-        return home(request,response)
+        return welcome(request,response)
     #update_profile(,request, response)
 
 
