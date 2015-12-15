@@ -23,7 +23,8 @@ CONTENT_TYPE = {
     'gif': 'image/gif',
     'ico': 'image/x-icon',
     'text': 'text/plain',
-    'json': 'application/json'
+    'json': 'application/json',
+    'otf': 'font/opentype'
 }
 
 SESSIONS = {}
@@ -265,6 +266,7 @@ def static_file_handler(request, response):
             response['content'] = file_descriptor.read()
         file_descriptor.close()
         content_type = request['path'].split('.')[-1].lower()
+        print content_type
         response['Content-type'] = CONTENT_TYPE[content_type]
         ok_200_handler(request, response)
     except:
@@ -296,6 +298,7 @@ def response_handler(request, response):
     response['Connection'] = 'close'
     response['Server'] = 'magicserver0.1'
     response_string = response_stringify(response)
+    print 'response send'
     request['socket'].send(response_string)
     #if request['header']['Connection'] != 'keep-alive':
     request['socket'].close()
@@ -362,7 +365,8 @@ def send_json_handler(request, response, content):
     '''
     #print 'send_json_handlre'
     if content:
-        response['content'] = json.dumps(content)
+        #response['content'] = json.dumps(content)
+        response['content'] = json.dumps(content).encode('utf8')
         response['Content-type'] = 'application/json'
         ok_200_handler(request, response)
     else:
