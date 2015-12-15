@@ -23,7 +23,8 @@ CONTENT_TYPE = {
     'gif': 'image/gif',
     'ico': 'image/x-icon',
     'text': 'text/plain',
-    'json': 'application/json'
+    'json': 'application/json',
+    'otf': 'font/opentype'
 }
 
 SESSIONS = {}
