@@ -1,4 +1,4 @@
 *.pyc
 main.py
 config.cfg
-*.rdb
+dump.rdb

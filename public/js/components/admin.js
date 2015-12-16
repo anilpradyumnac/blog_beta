@@ -14,15 +14,12 @@ var Profile = React.createClass({
 		this.loadJson()
 	},																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												
 	render:function(){
-<<<<<<< HEAD
 		console.log(this.state.data)
-=======
->>>>>>> origin/dev-sai
 		return(
 			<form action="/new_user" method="post">
-				<input type="text" placeholder="Add a user"/>
+				<input type="text" name="user" placeholder="Add a user"/>
 				<input type="submit" value="Add"/>
-			</form>																																																																																																																																													
+			</form>																																																																																																																																											
 		)	
 	}
 })
