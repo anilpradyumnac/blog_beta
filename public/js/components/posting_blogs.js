@@ -27,7 +27,6 @@ var EachPost = React.createClass({
 var GetPosts = React.createClass({
     
     componentDidMount:function(){
-
         this.loadPage()
     },
     loadPage:function(){

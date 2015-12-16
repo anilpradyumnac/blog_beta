@@ -9,10 +9,10 @@ body{
   font-family: 'Montserrat';   
 }
 
-header{
+header {
   background-color: #1f1a1b;
   width: 100%;
-  height: 250px;
+  min-height: 260px;
   color: #fff;
   font-family: 'Playfair Display';   
 }
@@ -25,7 +25,7 @@ header h1 {
   text-align: center;
 }
 
-header h3{
+header h3 {
   text-align: center;
   font-size: 24px;
 }  
@@ -34,7 +34,8 @@ header ul {
   margin: 0;
   padding: 0;
   float: right;
-  padding: 5px; }
+  padding: 5px; 
+}
 
 header li {
   text-decoration: none;
@@ -49,11 +50,11 @@ header li a:hover {
   color: #E0E0E0;
 }
 
-.signin{
+.signin {
   height: 325px;
 }
 
-.signin a{
+.signin a {
   cursor: pointer;
   text-decoration: none;
   font-size: 15px;
@@ -62,18 +63,18 @@ header li a:hover {
   margin: auto;
 }
 
-.signin a:hover{
+.signin a:hover {
   color: #757575;  
 }
 
-.write{
+.write {
   width: 100%;
   display: inline-block;
   vertical-align: middle;
   text-align: center;
 }
 
-.write a{
+.write a {
   color: #fff;
   border: 2px solid #fff;
   border-radius: 10px;
@@ -95,7 +96,7 @@ header li a:hover {
   font-family: 'Montserrat'; 
 }
 
-.formwrapper{
+.formwrapper {
   width: 600px;
   height:400px;
   display: block;
@@ -109,30 +110,30 @@ header li a:hover {
   overflow: hidden; 
 }
 
-.article-slug{
+.article-slug {
   width: 600px;
   height: 100%;
 }
 
-.likes{
+.likes {
   color: #000;
 }
 
-.likes button{
+.likes button {
   color: #000;
 }
 
-.line{
+.line {
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
 }
 
-.line a{
+.line a {
   color: #000;
 }
 
-.line a:hover{
-  color: #eee;
+.line a:hover {
+  color: #666;
 }
 
 footer {
@@ -145,19 +146,19 @@ footer {
   font-weight: bold;
 }
 
-footer a{
+footer a {
   color: white;
 }
 
-footer a:hover{
+footer a:hover {
   color: #ccc;
 }
 
 .box {
-    width:400px;
-    height:200px;
-    margin:150px auto;
-    box-shadow: 0 10px 6px -6px #777;
+  width:400px;
+  height:200px;
+  margin:150px auto;
+  box-shadow: 0 10px 6px -6px #777;
 }
 
 .article {
@@ -167,23 +168,23 @@ footer a:hover{
   font-family: 'Montserrat';
 }
 
-.article a{
+.article a {
   color: #000;
 }
 
-.article a:hover{
+.article a:hover {
   color:#E0E0E0;
 }
 
-fieldset{
+fieldset {
   border: none;
 }
 
-form{
+form {
   padding: 20px;
 }
 
-input[type="text"],input[type="password"],input[type="submit"]{
+input[type="text"],input[type="submit"] {
   margin: 10px;
   padding: 10px;
 }
@@ -196,18 +197,10 @@ input[type="text"] {
   border-bottom: 2px solid #eee;
 }
 
-
-input[type="password"] {
-  width: 98%;
-  height: 30px;
-  border: none;
-  border-bottom: 2px solid #eee;  
-}
-
-input[type="text"]:focus,input[type="password"]:focus{
-outline: none;
-border-bottom:2px solid #768A9A;
-transition:0.9s ease;
+input[type="text"]:focus {
+  outline: none;
+  border-bottom:2px solid #768A9A;
+  transition:0.9s ease;
 }
 
 input[type="submit"] {
@@ -226,29 +219,29 @@ input[type="submit"] {
   border:2px solid #768A9A;
 }
 
-input[type="submit"]:hover{
+input[type="submit"]:hover {
   border:2px solid #768A9A;
   color: #768A9A;
 }
 
-.error{
+.error {
   color: blue;
   font-weight: 500;
   font-size: 12px;
 }
 
 textarea#blog {
-    width: 600px;
-    height: 120px;
-    border: 3px solid #cccccc;
-    padding: 5px;
+  width: 600px;
+  height: 120px;
+  border: 3px solid #cccccc;
+  padding: 5px;
 }   
 
 textarea:focus {
   border: 1px solid #768A9A;
 } 
 
-button{
+button {
   background-color: transparent;
   outline:none;
   color: white;
@@ -258,43 +251,77 @@ button{
   font-family: 'Source Sans Pro';
 }
 
-button:hover{
+button:hover {
   color: #E0E0E0;
 }
 
 @media screen and (max-width: 640px ) {
-   header{
+  header {
     width: 100%;
     box-sizing:border-box;
-    min-height: 450px; 
   }
   header h1 {
-  width: 50%;
-  margin: auto;
-  padding: 0;
-  text-align: center; 
-  }
-  .wrapper {
-  width: 100%;
-  display: block;
-  margin: auto;
-  box-sizing:border-box ;   
-  }
-  .formwrapper{
-  width:100%;
-  box-sizing:border-box    
-  display: block;
-  margin: auto; 
-}
-form{
     width: 100%;
-    box-sizing:border-box  
-}
-textarea#blog{
+    font-size: 50px;
+    padding: 0;
+  }
+  header h3 {
+    width: 100%;
+    font-size: 20px;
+    box-sizing:border-box;    
+  }
+  .write {
+    width: 100%;
+    display: block;
+    text-align: center;
+  }
+  .write a {
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    width: 140px;
+    height: 30px;
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+    box-sizing:border-box;  
+  }
+  header ul {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    float: none;
+    padding: 5px; 
+  }  
+  .formwrapper{
+    width:100%;
+    box-sizing:border-box;
+  }
+  .wrapper{
+    width:100%;
+    box-sizing:border-box;
+  }
+  form {
+    width: 100%;
+    box-sizing:border-box;  
+  }
+  textarea#blog{
     width: 100%;
     box-sizing:border-box
-}
-  footer{
+  }
+  .article {
+    width: 100%;
+    box-sizing:border-box;
+  }
+  .signin {
+    width: 100%;
+    box-sizing:border-box;
+  }
+  footer {
+    width: 100%;
+    box-sizing:border-box;      
+  }
+  footer a{
     width: 100%;
     box-sizing:border-box;
   }

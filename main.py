@@ -17,7 +17,7 @@ def html_logged_in_header():
     header_html = ''
     with open('./views/header_signin.html', 'r') as fd:
         header_html = fd.read()
-    fd.close()
+    fd.close()  
     return header_html
 
 def html_header():
@@ -39,30 +39,7 @@ def signout(request, response):
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
         server.del_session(request)
-    home(request, response)
-
-def home(request, response):
-    session_data = server.get_session(request)
-    if session_data and 'user' in session_data:
-        data = html_logged_in_header()
-        data += 'Hi '
-        user = str(session_data['user'])
-        data += user
-        blogs = redis_server.smembers('user_blogs' + ':' + user)
-    else:
-        data = html_header()
-        blogs = redis_server.smembers('all_blogs')
-    for blog in blogs:
-        data += '<p>'
-        data += redis_server.hget(blog, 'title')
-        data += redis_server.hget(blog, 'time') if redis_server.hget(blog, 'time') else ''
-        data += redis_server.hget(blog, 'slug') if redis_server.hget(blog, 'slug') else ''
-        data += '<br>'
-        data += redis_server.hget(blog, 'content')
-        data += '</p>'
-    data += html_tail()
-    server.send_html_handler(request, response, data)
-
+    welcome(request, response)
 
 
 def get_blogs(request, response):
@@ -97,6 +74,7 @@ def login(request, response):
 def welcome(request,response):
     session_data = server.get_session(request)
     if session_data and 'user' in session_data:
+        user = str(session_data['user'])
         header = html_logged_in_header()
     else:
         header = html_header()
@@ -129,10 +107,15 @@ def verify(request, response):
 
 
 def profile(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        header = html_logged_in_header()
+    else:
+        header = html_header()    
     with open("./views/profile.html", "r") as fd:
         content = fd.read()
     fd.close()        
-    server.send_html_handler(request, response, content)
+    server.send_html_handler(request, response, header + content)
 
 def get_user_name(blog):
     all_users = redis_server.smembers('all_users')
@@ -170,7 +153,7 @@ def update_profile(request, response):
         redis_key = 'user_profile' + ':' + session_data['user']
         user_details = {'name': name, 'email': email}
         redis_server.hmset(redis_key, user_details)
-        home(request, response)
+        welcome(request, response)
 
 def edit(request, response):
     with open("./views/edit.html","r") as fd:
@@ -250,7 +233,7 @@ def new_blog(request, response):
         redis_server.sadd('user_blogs' + ':' + session_data['user'], blog_id)
         redis_server.sadd('all_blogs', blog_id)
         redis_server.save()
-    home(request, response)
+    welcome(request, response)
 
 def new_image(request, response):
     print request['form']['file']['filename']
@@ -261,11 +244,16 @@ def new_image(request, response):
 
 
 def admin(request, response):
+    session_data = server.get_session(request)
+    if session_data and 'user' in session_data:
+        header = html_logged_in_header()
+    else:
+        header = html_header()       
     print 'admin'
-    with open("./views/admin.html", "r") as fd:
+    with open("./views/admin.html", "r") as fd:    
         content = fd.read()
     fd.close()        
-    server.send_html_handler(request, response, content)
+    server.send_html_handler(request, response, header + content)
 
 def new_user(request, response):
     content = request['content']
@@ -274,7 +262,7 @@ def new_user(request, response):
     if session_data and 'user' in session_data:
         new_user = content['user'][0]
         redis_server.sadd('all_users', new_user)
-        return home(request,response)
+        return welcome(request,response)
     #update_profile(,request, response)
 
 
